@@ -1,39 +1,34 @@
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class HeartView : MonoBehaviour
 {
-    private Image _image;
-
-    private Heart _heart;
+    [SerializeField] private List<Image> _images;
+    [SerializeField] private int _amount;
+    private HeartContainer _heartContainer;
+    private Player _player;
 
     private void Start()
     {
-        _image = GetComponent<Image>();
-        _heart = new Heart(_image);
+        _player = new Player(20, 20);
+        _heartContainer = new HeartContainer(_images.Select(image => new Heart(image)).ToList());
+        _player.Healed += (sender, args) => _heartContainer.Replenish(args.Amount);
+        _player.Damaged += (sender, args) => _heartContainer.Deplete(args.Amount);
     }
 
     void Update()
     {
-
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            OnGetHit();
+            _player.Heal(_amount);
         }
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            OnHealthItemPickup();
+            _player.Damage(_amount);
         }
-    }
-
-    public void OnGetHit()
-    {
-        _heart.Deplete(1);
-    }
-
-    public void OnHealthItemPickup()
-    {
-        _heart.Replenish(1);
     }
 }

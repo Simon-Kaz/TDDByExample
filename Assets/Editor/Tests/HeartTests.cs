@@ -1,4 +1,5 @@
 using System;
+using Infrastructure;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,9 +14,49 @@ namespace Editor.Tests
         [SetUp]
         public void BeforeTest()
         {
-            _image = new GameObject().AddComponent<Image>();
-            _image.fillAmount = 0;
-            _heart = new Heart(_image);
+            _image = An.Image().WithFillAmount(0);
+            _heart = A.Heart().With(_image);
+        }
+
+        public class TheEmptyHeartPiecesProperty : HeartTests
+        {
+            [Test]
+            public void _100_Percent_Image_Fill_Is_0_Empty_Heart_Pieces()
+            {
+                _image.fillAmount = 1;
+                Assert.That(_heart.EmptyHeartPieces, Is.EqualTo(0));
+            }
+
+            [Test]
+            public void _75_Percent_Image_Fill_Is_1_Empty_Heart_Piece()
+            {
+                _image.fillAmount = 0.75f;
+                Assert.That(_heart.EmptyHeartPieces, Is.EqualTo(1));
+            }
+        }
+
+        public class TheFilledHeartPiecesProperty : HeartTests
+        {
+            [Test]
+            public void _0_Image_Fill_Is_0_Heart_Pieces()
+            {
+                _image.fillAmount = 0;
+                Assert.That(_heart.FilledHeartPieces, Is.EqualTo(0));
+            }
+
+            [Test]
+            public void _25_Percent_Image_Fill_Is_1_Heart_Pieces()
+            {
+                _image.fillAmount = 0.25f;
+                Assert.That(_heart.FilledHeartPieces, Is.EqualTo(1));
+            }
+
+            [Test]
+            public void _75_Percent_Image_Fill_Is_3_Heart_Pieces()
+            {
+                _image.fillAmount = 0.75f;
+                Assert.That(_heart.FilledHeartPieces, Is.EqualTo(3));
+            }
         }
 
         public class ReplenishTests: HeartTests
